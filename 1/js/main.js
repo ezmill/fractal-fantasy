@@ -21,15 +21,15 @@ function init() {
 	document.body.appendChild( container );
 
 	camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
-	camera.position.z = 500;
+	camera.position.z = 100;
 	controls = new THREE.OrbitControls(camera);
 
 	scene = new THREE.Scene();
-	scene.fog = new THREE.Fog( 0x000000, 1, 10 );
+	// scene.fog = new THREE.Fog( 0x000000, 1, 10 );
     scene.add(new THREE.DirectionalLight( 0xffffff, 0.5 ));
 	
 	renderer = new THREE.WebGLRenderer();
-	renderer.setClearColor( 0x000000 );
+	renderer.setClearColor( 0xffffff );
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.sortObjects = false;
 
@@ -77,10 +77,8 @@ function animate() {
 
 function render() {
     	
-    // camera.position.x += ( mouseX - camera.position.x ) * .005;
-	// camera.position.y += ( - mouseY - camera.position.y ) * .005;
-	// camera.lookAt( scene.position );
-	camera.position.z -= 2.0; 
+	camera.position.z -= 0.25; 
+
 	for(var i = 0; i < tubes.length; i++){
 		tubes[i].update();
 	}

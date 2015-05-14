@@ -132,6 +132,7 @@ var matcapShader =  {
 		noiseChunck.text,
 
 		"varying vec2 vN;",
+		"varying vec2 vUv;",
 		"uniform float noiseDetail;",
 		"uniform float noiseScale;",
 		"uniform float time;",
@@ -150,6 +151,7 @@ var matcapShader =  {
 		"        pow( r.z + 1., 2. ) ",
 		"    );",
 		"    vN = r.xy / m + .5;",
+		"    vUv = uv;",
 
 		"float disp = noiseScale * pnoise( noiseDetail * position + vec3(time), vec3( 10.0 ) );",
 
@@ -167,10 +169,11 @@ var matcapShader =  {
 		"uniform sampler2D tMatCap;",
 
 		"varying vec2 vN;",
+		"varying vec2 vUv;",
 
 		"void main() {",
 		"    ",
-		"    vec3 base = texture2D( tMatCap, vN ).rgb;",
+		"    vec3 base = texture2D( tMatCap, vUv ).rgb;",
 		"    gl_FragColor = vec4( base, 1. );",
 
 		"}"
