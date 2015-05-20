@@ -96,7 +96,7 @@ var noiseChunck = {
 			"float t = -0.5;",
 			"for(float f = 1.0; f<=10.0; f++){",
 				"float power = pow(2.0, f);",
-				// "t += abs( pnoise( vec3( power * p ), vec3( 10.0,10.0,10.0) ) / power);",
+				"t += abs( pnoise( vec3( power * p ), vec3( 10.0,10.0,10.0) ) / power);",
 			"}",
 			"return t;",
 		"}",
@@ -123,7 +123,12 @@ var matcapShader =  {
 			"tMatCap" : {type: 't', value: null },
 			"noiseScale":{type: "f", value:0.0},
 			"noiseDetail":{type: "f", value:0.0},
-			"time":{type: "f", value:0.0}
+			"time":{type: "f", value:0.0},
+			"glowColor":{type: "c", value: null},
+			"viewVector": { type: "v3", value: null },
+			"c":   { type: "f", value: 1.0 },
+			"p":   { type: "f", value: 1.4 }
+
 		}
 	] ),
 
@@ -136,6 +141,10 @@ var matcapShader =  {
 		"uniform float noiseDetail;",
 		"uniform float noiseScale;",
 		"uniform float time;",
+		"uniform vec3 viewVector;",
+		"uniform float c;",
+		"uniform float p;",
+		"varying float intensity;",
 
 		"void main() {",
 
@@ -153,6 +162,10 @@ var matcapShader =  {
 		"    vN = r.xy / m + .5;",
 		"    vUv = uv;",
 
+	    "vec3 vNormal = normalize( normalMatrix * normal );",
+		"vec3 vNormel = normalize( normalMatrix * viewVector );",
+		"intensity = pow( c - dot(vNormal, vNormel), p );",
+
 		"float disp = noiseScale * pnoise( noiseDetail * position + vec3(time), vec3( 10.0 ) );",
 
 		"vec3 newPosition = p.xyz - normal * disp;",
@@ -166,16 +179,23 @@ var matcapShader =  {
 	
 	fragmentShader: [
 		
-		"uniform sampler2D tMatCap;",
+		// "uniform sampler2D tMatCap;",
 
-		"varying vec2 vN;",
-		"varying vec2 vUv;",
+		// "varying vec2 vN;",
+		// "varying vec2 vUv;",
 
-		"void main() {",
-		"    ",
-		"    vec3 base = texture2D( tMatCap, vUv ).rgb;",
-		"    gl_FragColor = vec4( base, 1. );",
+		// "void main() {",
+		// "    ",
+		// "    vec4 base = texture2D( tMatCap, vUv );",
+		// "    gl_FragColor = vec4( base.rgb, base.a );",
 
+		// "}"
+		"uniform vec3 glowColor;",
+		"varying float intensity;",
+		"void main() ",
+		"{",
+		"	vec3 glow = glowColor * intensity;",
+		"    gl_FragColor = vec4( glow, 1.0 );",
 		"}"
 	
 	].join("\n")

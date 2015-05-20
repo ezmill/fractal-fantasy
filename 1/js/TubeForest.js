@@ -31,9 +31,10 @@
 //  }
 // }
 
-function Tube(SCENE, POS, ROT, OFFSET){
+function Tube(SCENE, CAMERA, POS, ROT, OFFSET){
     
     this.scene = SCENE; 
+    this.camera = CAMERA; 
     this.time = 0.0;    
     this.offset = OFFSET
     CustomSinCurve = THREE.Curve.create(
@@ -42,28 +43,35 @@ function Tube(SCENE, POS, ROT, OFFSET){
         },
         
         function ( t ) { //getPoint: t is between 0-1
-            var tx = t * 3 - 1.5,
+            // var tx = t * 3 - 1.5,
+            var tx = Math.sin(t*Math.PI*2)/5
                 // ty = Math.sin( Math.PI * t )*0.4,
                 ty = 0,
-                tz = 0;
+                tz = Math.cos( t*Math.PI*2)/5;
             
             return new THREE.Vector3(tx, ty, tz).multiplyScalar(this.scale);
         }
     );
 
-    this.path = new CustomSinCurve( 500 );
+    this.path = new CustomSinCurve( 1000 );
+    // this.path = new THREE.Curves.DecoratedTorusKnot4a();
     this.shader = matcapShader;
     // this.shader = THREE.ShaderLib["cube"];
-    this.matCap = THREE.ImageUtils.loadTexture( 'tex/matcap3.jpg' );
-    this.geometry = new THREE.TubeGeometry(this.path, 500, 50, 100, false);
-
+    // this.matCap = THREE.ImageUtils.loadTexture( 'tex/matcap3.jpg' );
+    this.geometry = new THREE.TubeGeometry(this.path, 1000, 50, 100, false);
+    // this.geometry = new THREE.TubeGeometry(this.path, 1000, 10, 100, false);
+    // this.geometry = new THREE.IcosahedronGeometry(40,4);
+    console.log(this.shader.uniforms);
     this.material = new THREE.ShaderMaterial({
         uniforms: this.shader.uniforms,
         vertexShader: this.shader.vertexShader,
         fragmentShader: this.shader.fragmentShader,
-        side: 2
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        side: 2,
+        depthWrite: false
     })
-    this.texture = THREE.ImageUtils.loadTexture("tex/vesselpattern.jpg");
+    this.texture = THREE.ImageUtils.loadTexture("tex/lightning.jpg");
     // this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
     // this.texture.repeat.set(1,1);
     // this.material = new THREE.MeshBasicMaterial({
@@ -74,19 +82,16 @@ function Tube(SCENE, POS, ROT, OFFSET){
     this.material.uniforms["tMatCap"].value = this.texture;
     this.material.uniforms["noiseScale"].value = 20.0;
     this.material.uniforms["noiseDetail"].value = 0.01;
+    // this.material.uniforms["glowColor"].value = new THREE.Color(0x3a73ca);
+    this.material.uniforms["glowColor"].value = new THREE.Color(0xffffff);
+    this.material.uniforms["viewVector"].value = this.camera.position;
+    this.material.uniforms["u_p"].value = 0.1;
+    this.material.uniforms["c"].value = 10.0;
+    this.material.uniforms["resolution"].value = new THREE.Vector2(window.innerWidth, window.innerHeight);
 
-    /*var path = "tex/Cube/";
-    var format = '.png';
-    var urls = [
-        path + 'px' + format, path + 'nx' + format,
-        path + 'py' + format, path + 'ny' + format,
-        path + 'pz' + format, path + 'nz' + format
-    ];
-    this.textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
-
-    this.material.uniforms["time"].value = this.time;
-    this.material.uniforms["tCube"].value = this.textureCube;
-    this.material.uniforms["tFlip"].value = -1;*/
+    // this.material.uniforms["time"].value = this.time;
+    // this.material.uniforms["tCube"].value = this.textureCube;
+    // this.material.uniforms["tFlip"].value = -1;
 
     this.mesh = new THREE.Mesh( this.geometry, this.material );
 
@@ -100,6 +105,8 @@ function Tube(SCENE, POS, ROT, OFFSET){
        
         this.time+=0.01;
         this.material.uniforms["time"].value = this.time;
+        this.material.uniforms.viewVector.value = 
+        new THREE.Vector3().subVectors( this.camera.position, this.mesh.position );
 
         this.geometry.verticesNeedUpdate = true;
         for(var i = 0; i < this.geometry.vertices.length; i++){
