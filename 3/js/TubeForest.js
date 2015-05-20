@@ -84,7 +84,7 @@ function Tube(SCENE, CAMERA, POS, ROT, OFFSET){
     this.update = function(){
        
         // this.time+=1;
-        this.cameraTime+=1.0;
+        this.cameraTime+=0.25;
         this.time+=0.01;
         this.material.uniforms["time"].value = this.time;
         this.material.uniforms.viewVector.value = 
@@ -92,8 +92,8 @@ function Tube(SCENE, CAMERA, POS, ROT, OFFSET){
 
         this.geometry.verticesNeedUpdate = true;
         for(var i = 0; i < this.geometry.vertices.length; i++){
-            this.geometry.vertices[i].y += Math.sin((i-i/2)/(1000) + this.time*10)*0.5; //sin wave effect
-            this.geometry.vertices[i].z += Math.sin((i-i/2)/(2000) + this.time*5)*0.3; //sin wave effect
+            this.geometry.vertices[i].y += Math.sin((i-i/2)/(500) + this.time*5)*0.75; //sin wave effect
+            this.geometry.vertices[i].z += Math.sin((i-i/2)/(1000) + this.time*2.5)*0.75; //sin wave effect
         }
     }
 
