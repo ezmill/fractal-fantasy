@@ -31,7 +31,7 @@ function Room(SCENE){
     this.loader = new THREE.BinaryLoader();
 
     this.init = function(){
-        // this.initLights();
+        this.initLights();
         this.initGeometry();
 
         // this.room.position.y = -20;
@@ -63,38 +63,38 @@ function Room(SCENE){
         this.leftWallMaterial = new THREE.MeshLambertMaterial({
             color: 0xffffff,
             side: THREE.DoubleSide,
-            bumpMap: this.alloyBump,
-            map: this.alloyTex,
-            normalMap: this.alloyNormal,
+            // bumpMap: this.alloyBump,
+            // map: this.alloyTex,
+            // normalMap: this.alloyNormal,
             // map: this.wallTex
         })
         this.leftWall = new THREE.Mesh(this.leftWallGeometry, this.leftWallMaterial);
         this.leftWall.position.set(-this.roomWidth / 2, this.roomHeight / 2, 0);
-        // this.scene.add(this.leftWall);
-        // this.room.add(this.leftWall);
+        this.scene.add(this.leftWall);
+        this.room.add(this.leftWall);
 
         this.backWallGeometry = new THREE.BoxGeometry(this.roomWidth, this.roomHeight, this.wallThickness);
         this.backWallMaterial = new THREE.MeshLambertMaterial({
             color: 0xffffff,
             side: THREE.DoubleSide,
-            bumpMap: this.alloyBump,
-            map: this.alloyTex,
-            normalMap: this.alloyNormal,
-            // map: this.wallTex
+            // bumpMap: this.alloyBump,
+            // map: this.alloyTex,
+            // normalMap: this.alloyNormal,
+            map: this.wallTex
         })
         this.backWall = new THREE.Mesh(this.backWallGeometry, this.backWallMaterial);
         this.backWall.position.set(0, this.roomHeight / 2, -this.roomDepth / 2);
-        // this.scene.add(this.backWall);
-        // this.room.add(this.backWall);
+        this.scene.add(this.backWall);
+        this.room.add(this.backWall);
 
         this.frontWallGeometry = new THREE.BoxGeometry(this.roomWidth, this.roomHeight, this.wallThickness);
         this.frontWallMaterial = new THREE.MeshLambertMaterial({
             color: 0xffffff,
             side: THREE.DoubleSide,
-            bumpMap: this.alloyBump,
-            map: this.alloyTex,
-            normalMap: this.alloyNormal,
-            // map: this.wallTex
+            // bumpMap: this.alloyBump,
+            // map: this.alloyTex,
+            // normalMap: this.alloyNormal,
+            map: this.wallTex
         })
         this.frontWall = new THREE.Mesh(this.frontWallGeometry, this.frontWallMaterial);
         this.frontWall.position.set(0, this.roomHeight / 2, this.roomDepth / 2);
@@ -106,30 +106,30 @@ function Room(SCENE){
         this.rightWallMaterial = new THREE.MeshLambertMaterial({
             color: 0xffffff,
             side: THREE.DoubleSide,
-            bumpMap: this.alloyBump,
-            map: this.alloyTex,
-            normalMap: this.alloyNormal,
-            // map: this.wallTex
+            // bumpMap: this.alloyBump,
+            // map: this.alloyTex,
+            // normalMap: this.alloyNormal,
+            map: this.wallTex
         });
         this.rightWall = new THREE.Mesh(this.rightWallGeometry, this.rightWallMaterial);
         this.rightWall.position.set(this.roomWidth / 2, this.roomHeight / 2, 0);
-        // this.scene.add(this.rightWall);
-        // this.room.add(this.rightWall);   
+        this.scene.add(this.rightWall);
+        this.room.add(this.rightWall);   
 
 
-        // this.loader.load("obj/ceiling-test.js", function(geometry) {
-        //     this.ceilingMaterial = new THREE.MeshLambertMaterial({
-        //         color: 0xffffff,
-        //         ambient: 0xffffff,
-        //         emissive: 0x666666,
-        //         bumpMap: this.noiseTex
-        //     });
-        //     this.ceiling = new THREE.Mesh(geometry, this.ceilingMaterial);
-        //     this.ceiling.y = -20;
-        //     this.ceiling.scale.set(3,3,3);
-        //     this.scene.add(this.ceiling);
-        //     this.room.add(this.ceiling);
-        // });      
+        this.loader.load("obj/ceiling-test.js", function(geometry) {
+            this.ceilingMaterial = new THREE.MeshLambertMaterial({
+                color: 0xffffff,
+                ambient: 0xffffff,
+                emissive: 0x666666,
+                bumpMap: this.noiseTex
+            });
+            this.ceiling = new THREE.Mesh(geometry, this.ceilingMaterial);
+            this.ceiling.y = -20;
+            this.ceiling.scale.set(3,3,3);
+            this.scene.add(this.ceiling);
+            this.room.add(this.ceiling);
+        });      
 
     }
 

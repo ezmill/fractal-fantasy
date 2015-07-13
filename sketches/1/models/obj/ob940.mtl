@@ -1,0 +1,28 @@
+# Blender MTL File: 'debris.blend'
+# Material Count: 2
+
+newmtl Material__43
+Ns 47.058824
+Ka 0.000000 0.000000 0.000000
+Kd 0.470400 0.470400 0.470400
+Ks 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+map_Kd /textures/WoodRough0050_1_L.jpg
+map_Bump /textures/WoodRough0050_1_L.jpg
+map_Ka /textures/WoodRough0050_1_L.jpg
+refl /textures/Raytrace_Raytrace.jpg
+
+newmtl Material__54
+Ns 47.058824
+Ka 0.000000 0.000000 0.000000
+Kd 0.470400 0.470400 0.470400
+Ks 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+map_Kd /textures/Map__26_Color Correction.jpg
+map_Bump /textures/2011-06-11-09441.jpg
+map_Ka /textures/Map__26_Color Correction.jpg
+refl /textures/Raytrace_Raytrace.jpg
