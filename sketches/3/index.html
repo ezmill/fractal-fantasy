@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)http://threejs.org/examples/webgl_materials_cubemap_refraction.html -->
+<html lang="en" style="visibility: visible;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>three.js webgl - materials - cube refraction [Lucy]</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background:#000;
+				color:#fff;
+				padding:0;
+				margin:0;
+				overflow:hidden;
+				font-family:georgia;
+				text-align:center;
+			}
+			a {	color: #ff0080;	text-decoration: none; }
+			a:hover { color: #0080ff; }
+
+			canvas { pointer-events:none; z-index:10; }
+
+			#d { text-align:center; margin:1em auto -9.5em; z-index:200; position:relative; display:block;
+				background:rgba(0,0,0,0.5); padding:0.5em; width:400px; border-radius:15px; -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.5) }
+
+			#oldie { margin-top:15em !important }
+		</style>
+	<style type="text/css"></style></head>
+
+	<body cz-shortcut-listen="true">
+
+		<script src="./three.js webgl - materials - cube refraction [Lucy]_files/three.min.js"></script>
+
+		<script src="./three.js webgl - materials - cube refraction [Lucy]_files/BinaryLoader.js"></script>
+
+		<script src="./three.js webgl - materials - cube refraction [Lucy]_files/Detector.js"></script>
+		<script src="js/OBJLoaderGEO.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/CCapture.min.js"></script>
+		<script src="js/gif.js"></script>
+		<script src="js/gif.worker.js"></script>
+		<script src="js/Whammy.js"></script>
+
+		<script>
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var FLOOR = -250;
+
+			var container, stats;
+
+			var camera, scene, renderer;
+			var cameraCube, sceneCube, cubeTarget;
+
+			var mesh, zmesh, geometry;
+
+			var loader;
+
+			var directionalLight, pointLight;
+
+			var mouseX = 0, mouseY = 0;
+
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+			var capturer = new CCapture( { format: 'webm', workersPath: 'js/' } );
+			var objects = [];
+			init();
+			animate();
+
+			function init() {
+
+				container = document.createElement('div');
+				document.body.appendChild(container);
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 100000 );
+				camera.position.z = 100;
+				controls = new THREE.OrbitControls(camera);
+
+				scene = new THREE.Scene();
+
+				var ambient = new THREE.AmbientLight( 0xffffff );
+				scene.add( ambient );
+
+				pointLight = new THREE.PointLight( 0xffffff, 2 );
+				scene.add( pointLight );
+
+
+				var r = "tex/";
+
+				var urls = [ r + "marble.jpg", r + "marble.jpg",
+							 r + "marble.jpg", r + "marble.jpg",
+							 r + "marble.jpg", r + "marble.jpg" ];
+
+				var textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+				// textureCube.minFilter = textureCube.magFilter = THREE.NearestFilter;
+
+				var cubeMaterial2 = new THREE.MeshBasicMaterial( { 
+					color: 0xffffff, 
+					side:2, 
+					envMap: textureCube,
+					refractionRatio: 0.5
+				 } );
+				// var cubeMaterial2 = new THREE.MeshPhongMaterial( { color: 0xffffff, envMap: textureCube, refractionRatio: 0.5, side:2, bumpMap: THREE.ImageUtils.loadTexture("tex/02.jpg"), bumpScale:1.0 } );
+
+				renderer = new THREE.WebGLRenderer({alpha:true, preserveDrawingBuffer: true});
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setClearColor(0xffffff, 0.0);
+				container.appendChild( renderer.domElement );
+
+				var manager = new THREE.LoadingManager();
+				manager.onProgress = function ( item, loaded, total ) {
+				    // console.log( item, loaded, total );
+				};
+				function loadModel(model, material, params ){
+				    // var loader = new THREE.OBJLoader( manager );
+				    var loader = new THREE.OBJLoaderGEO( manager );
+				    loader.load( model, function ( object ) {
+
+				        object.traverse( function ( child ) {
+
+				            if ( child instanceof THREE.Mesh ) {
+				                child.material = material;
+				                child.geometry.computeVertexNormals();
+				                child.geometry.mergeVertices();
+				            }
+				        } );
+        				object.scale.x = object.scale.y = object.scale.z = params.scale;
+        				object.position.copy(params.position);
+        				object.rotation.copy(params.rotation);
+
+				        scene.add( object );
+		                objects.push(object);
+
+				    }, onProgress, onError );
+				}
+				function onProgress( xhr ) {
+				if ( xhr.lengthComputable ) {
+				    var percentComplete = xhr.loaded / xhr.total * 100;
+				    // console.log( Math.round(percentComplete, 2) + '% downloaded' );
+				    }
+				};
+
+				function onError( xhr ) {
+				};
+
+
+			    loadModel("models/obj/figurine.obj", cubeMaterial2, {
+			    	scale: 100.0, 
+			    	position: new THREE.Vector3(0,-20,0),
+			    	rotation: new THREE.Vector3(0,0,0)			    	
+			    } );		
+			 //    loadModel("models/obj/fern3.obj", cubeMaterial2, {
+			 //    	scale: 2.0, 
+			 //    	position: new THREE.Vector3(0,0,0),
+			 //    	rotation: new THREE.Vector3(0,0,0)
+				// } );
+				document.addEventListener('mousemove', onDocumentMouseMove, false);
+			    document.addEventListener( 'keydown', function(){screenshot(renderer)}, false );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2,
+				windowHalfY = window.innerHeight / 2,
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function onDocumentMouseMove(event) {
+
+				mouseX = ( event.clientX - windowHalfX ) * 4;
+				mouseY = ( event.clientY - windowHalfY ) * 4;
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+
+			}
+			function render() {
+
+				var timer = -0.0002 * Date.now();
+
+				// camera.position.x += ( mouseX - camera.position.x ) * .05;
+				// camera.position.x += 10;
+				// camera.position.x = Math.sin(timer*5.0)*750;
+				// camera.position.z = Math.cos(timer*5.0)*750;
+				// camera.rotation.y += 0.01;
+				// camera.position.y += ( - mouseY - camera.position.y ) * .05;
+				// console.log(objects);
+				// objects[1].scale.set(10,10,10);
+				// objects[1].rotateOnAxis(new THREE.Vector3(0.0, 0.5, 0.5), 0.1);
+				// objects[2].rotateOnAxis(new THREE.Vector3(0.0, 0.5, 0.5), -0.1);
+				// camera.lookAt( scene.position );
+
+				pointLight.position.x = 1500 * Math.cos( timer );
+				pointLight.position.z = 1500 * Math.sin( timer );
+
+				renderer.render( scene, camera );
+
+			    capturer.capture( renderer.domElement );
+
+
+			}
+function screenshot(renderer) {
+    if (event.keyCode == "32") {
+        grabScreen(renderer);
+
+        function grabScreen(renderer) {
+            var blob = dataURItoBlob(renderer.domElement.toDataURL('image/png'));
+            var file = window.URL.createObjectURL(blob);
+            var img = new Image();
+            img.src = file;
+            img.onload = function(e) {
+                window.open(this.src);
+
+            }
+        }
+        function dataURItoBlob(dataURI) {
+            var byteString;
+            if (dataURI.split(',')[0].indexOf('base64') >= 0)
+                byteString = atob(dataURI.split(',')[1]);
+            else
+                byteString = unescape(dataURI.split(',')[1]);
+
+            var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+            var ia = new Uint8Array(byteString.length);
+            for (var i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+
+            return new Blob([ia], {
+                type: mimeString
+            });
+        }
+
+        function insertAfter(newNode, referenceNode) {
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        }
+    }
+    if(event.keyCode == "82"){
+        capturer.start();
+    }
+    if(event.keyCode == "84"){
+        capturer.stop();
+        capturer.save( function( blob ) {
+            window.location = blob;
+        });
+    }
+}
+		</script><div><canvas width="2880" height="1386" style="width: 1440px; height: 693px;"></canvas></div>
+	
+
+</body></html>
