@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)http://www.alexeyrudenko.com/cc/js/014/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>three.js Mesh</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background:#fff;
+				padding:0;
+				margin:0;
+				font-weight: bold;
+				overflow:hidden;
+			}
+			
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				z-index:1000;
+			}
+		</style>
+	</head>
+	<body cz-shortcut-listen="true" style="visibility: visible;">
+		<script type="x-shader/x-vertex" id="vertexshader">
+			varying vec3 vNormal;
+			void main() {
+				vNormal = normalize( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal );
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+
+		</script>
+
+		<script type="x-shader/x-fragment" id="fragmentshader">
+
+			varying vec3 vNormal;
+			uniform sampler2D texture;
+
+			void main() {
+			    vec4 shading = texture2D(texture, vec2(vNormal.xyz * vec3(0.495) + vec3(0.5)));
+				gl_FragColor = shading;
+			}
+
+		</script>
+		
+		<script src="./5_files/three.min.js"></script>
+		<script src="./5_files/mesh.js"></script><div><canvas width="2880" height="1398" style="width: 1440px; height: 699px;"></canvas></div>
+</body></html>

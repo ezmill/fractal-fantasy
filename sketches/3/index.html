@@ -28,11 +28,10 @@
 
 	<body cz-shortcut-listen="true">
 
-		<script src="./three.js webgl - materials - cube refraction [Lucy]_files/three.min.js"></script>
+		<script src="js/three.min.js"></script>
 
-		<script src="./three.js webgl - materials - cube refraction [Lucy]_files/BinaryLoader.js"></script>
 
-		<script src="./three.js webgl - materials - cube refraction [Lucy]_files/Detector.js"></script>
+		<script src="js/Detector.js"></script>
 		<script src="js/OBJLoaderGEO.js"></script>
 		<script src="js/OrbitControls.js"></script>
 		<script src="js/CCapture.min.js"></script>
@@ -86,23 +85,28 @@
 
 				var r = "tex/";
 
-				var urls = [ r + "marble.jpg", r + "marble.jpg",
-							 r + "marble.jpg", r + "marble.jpg",
-							 r + "marble.jpg", r + "marble.jpg" ];
+				var urls = [ r + "cdblur.jpg", r + "cdblur.jpg",
+							 r + "cdblur.jpg", r + "cdblur.jpg",
+							 r + "cdblur.jpg", r + "cdblur.jpg" ];
 
-				var textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+				// var textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
 				// textureCube.minFilter = textureCube.magFilter = THREE.NearestFilter;
+				var video = document.createElement("video");
+				video.src = "tex/video.mp4";
+				video.play();
+				videoTex = new THREE.Texture(video);
+				textureCube = new THREE.CubeTexture([videoTex,videoTex,videoTex,videoTex,videoTex,videoTex], THREE.CubeRefractionMapping)
+				console.log(textureCube);
 
 				var cubeMaterial2 = new THREE.MeshBasicMaterial( { 
 					color: 0xffffff, 
 					side:2, 
 					envMap: textureCube,
-					refractionRatio: 0.5
+					refractionRatio: 0.9
 				 } );
 				// var cubeMaterial2 = new THREE.MeshPhongMaterial( { color: 0xffffff, envMap: textureCube, refractionRatio: 0.5, side:2, bumpMap: THREE.ImageUtils.loadTexture("tex/02.jpg"), bumpScale:1.0 } );
 
 				renderer = new THREE.WebGLRenderer({alpha:true, preserveDrawingBuffer: true});
-				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.setClearColor(0xffffff, 0.0);
 				container.appendChild( renderer.domElement );
@@ -120,8 +124,8 @@
 
 				            if ( child instanceof THREE.Mesh ) {
 				                child.material = material;
-				                child.geometry.computeVertexNormals();
-				                child.geometry.mergeVertices();
+				                // child.geometry.computeVertexNormals();
+				                // child.geometry.mergeVertices();
 				            }
 				        } );
         				object.scale.x = object.scale.y = object.scale.z = params.scale;
@@ -144,9 +148,9 @@
 				};
 
 
-			    loadModel("models/obj/figurine.obj", cubeMaterial2, {
+			    loadModel("models/obj/cd.obj", cubeMaterial2, {
 			    	scale: 100.0, 
-			    	position: new THREE.Vector3(0,-20,0),
+			    	position: new THREE.Vector3(0,0,0),
 			    	rotation: new THREE.Vector3(0,0,0)			    	
 			    } );		
 			 //    loadModel("models/obj/fern3.obj", cubeMaterial2, {
@@ -192,7 +196,9 @@
 
 			}
 			function render() {
-
+				for(var i = 0; i < textureCube.images.length; i++){
+					textureCube.images[i].needsUpdate = true;
+				}
 				var timer = -0.0002 * Date.now();
 
 				// camera.position.x += ( mouseX - camera.position.x ) * .05;

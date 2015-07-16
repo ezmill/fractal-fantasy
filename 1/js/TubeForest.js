@@ -44,10 +44,10 @@ function Tube(SCENE, CAMERA, POS, ROT, OFFSET){
         
         function ( t ) { //getPoint: t is between 0-1
             // var tx = t * 3 - 1.5,
-            var tx = Math.sin(t*Math.PI*2)/5
+            var tx = Math.sin(t*Math.PI*4)/3,
                 // ty = Math.sin( Math.PI * t )*0.4,
                 ty = 0,
-                tz = Math.cos( t*Math.PI*2)/5;
+                tz = Math.cos( t*Math.PI*4)/3;
             
             return new THREE.Vector3(tx, ty, tz).multiplyScalar(this.scale);
         }
@@ -66,10 +66,10 @@ function Tube(SCENE, CAMERA, POS, ROT, OFFSET){
         uniforms: this.shader.uniforms,
         vertexShader: this.shader.vertexShader,
         fragmentShader: this.shader.fragmentShader,
-        blending: THREE.AdditiveBlending,
+        // blending: THREE.AdditiveBlending,
         transparent: true,
         side: 2,
-        depthWrite: false
+        // depthWrite: false
     })
     this.texture = THREE.ImageUtils.loadTexture("tex/lightning.jpg");
     // this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
@@ -110,8 +110,8 @@ function Tube(SCENE, CAMERA, POS, ROT, OFFSET){
 
         this.geometry.verticesNeedUpdate = true;
         for(var i = 0; i < this.geometry.vertices.length; i++){
-            this.geometry.vertices[i].y += Math.sin((i-i/2)/(1000) + this.time*10)*0.5; //sin wave effect
-            this.geometry.vertices[i].z += Math.sin((i-i/2)/(2000) + this.time*5)*0.3; //sin wave effect
+            this.geometry.vertices[i].y += Math.sin((i-i/2)/(1000) + this.time*10)*1.5; //sin wave effect
+            this.geometry.vertices[i].z += Math.sin((i-i/2)/(2000) + this.time*5)*1.3; //sin wave effect
         }
     }
 
